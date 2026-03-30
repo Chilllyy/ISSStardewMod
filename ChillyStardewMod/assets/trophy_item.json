@@ -3,10 +3,20 @@
     "Name": "ChillyTestMod_Trophy",
     "Displayname": "Piss Chalice",
     "Description": "A trophy for seeing the ISS piss value at exactly 50%!",
-    "Type": "Objects",
-    "Category": -101,
-    "Price": 0,
+    "Type": "Furniture",
+    "Category": -8,
     "Texture": "Mods/ChillyTestMod/Objects",
-    "SpriteIndex": 0
+    "ExcludeFromRandomSale": true,
+    "ExcludeFromFishingCollection": true,
+    "ExcludeFromShippingCollection": true,
+    "CanBeTrashed": false,
+    "CanBeGivenAsGift": true,
+    "Fragility": 0,
+    "SpriteIndex": 0,
+    "ContextTags": [
+      "color_yellow",
+      "placeable",
+      "prevent_loss_on_death"
+    ]
   }
 }
