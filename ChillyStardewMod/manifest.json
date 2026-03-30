@@ -1,0 +1,12 @@
+{
+  "Name": "Chilly Stardew Mod",
+  "Author": "Chilllyy",
+  "Version": "1.0.0",
+  "description": "Test Mod",
+  "UniqueID": "chillywilly.TestMod",
+  "EntryDll": "ChillyStardewMod.dll",
+  "Dependencies": [
+  ],
+  "MinimumAPIVersion": "4.0.0",
+  "UpdateKeys": []
+}
