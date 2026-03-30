@@ -121,7 +121,7 @@ namespace ChillyStardewMod
         {
             Item trophy = ItemRegistry.Create("ChillyTestMod_Trophy");
             Item res = who.addItemToInventory(trophy);
-            if (res == null) return -1;
+            if (res != null) return -1;
             return who.getIndexOfInventoryItem(trophy);
         }
 
