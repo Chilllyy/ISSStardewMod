@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.GameData.Objects;
 using StardewValley.Objects;
 
 namespace ChillyStardewMod
@@ -16,6 +17,9 @@ namespace ChillyStardewMod
         public static IModHelper hel;
         private static string assetPath;
         public static string uniqueID;
+
+        private string trophyTexturePath;
+        private IDictionary<string, IDictionary<string, object>> trophy_item;
         
         private static LightstreamerClient lsClient;
         public static int ISSValue = -1;
@@ -34,6 +38,9 @@ namespace ChillyStardewMod
             uniqueID = ModManifest.UniqueID;
             Helper.ModContent.Load<Texture2D>("assets/ISS.png"); //Load content
             assetPath = Helper.ModContent.GetInternalAssetName("assets/ISS.png").BaseName;
+
+            Helper.ModContent.Load<Texture2D>("assets/Trophy.png");
+            trophyTexturePath = Helper.ModContent.GetInternalAssetName("assets/Trophy.png").BaseName;
             
             lsClient.subscribe(sub);
             
@@ -49,10 +56,24 @@ namespace ChillyStardewMod
                 prefix: new HarmonyMethod(typeof(TVPatches), nameof(TVPatches.selectChannel_Prefix))
             );
                 
-            helper.Events.Input.ButtonPressed += this.OnButtonPressed;
             helper.Events.Multiplayer.ModMessageReceived += this.OnModMessageReceived;
+            helper.Events.Content.AssetRequested += this.OnAssetRequested;
 
             helper.ConsoleCommands.Add("issosd", "Sets SS value", this.setValue);
+        }
+
+        public void OnAssetRequested(object sender, AssetRequestedEventArgs e)
+        {
+            if (e.NameWithoutLocale.BaseName == "Data/Objects")
+            {
+                ObjectData trophy_item =
+                    Helper.ModContent.Load <Dictionary<string, ObjectData>>("assets/trophy_item.json").GetValueSafe("Item");
+                trophy_item.Texture = trophyTexturePath;
+                e.Edit(asset =>
+                {
+                    asset.AsDictionary<string, ObjectData>().Data.Add("ChillyTestMod_Trophy", trophy_item);
+                });
+            }
         }
 
         public void OnModMessageReceived(object sender, ModMessageReceivedEventArgs e)
@@ -108,18 +129,6 @@ namespace ChillyStardewMod
                 this.Monitor.Log($"Unable to parse args as a number \n{args[0]}\n{e}", LogLevel.Alert);
             }
         }
-
-
-        private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
-        {
-            // ignore if player hasn't loaded a save yet
-            if (!Context.IsWorldReady)
-                return;
-
-            // print button presses to the console window
-            this.Monitor.Log($"{Game1.player.Name} pressed {e.Button}.", LogLevel.Debug);
-        }
-
         internal class TVPatches
         {
             internal static bool checkForAction_Prefix(TV __instance, Farmer who, bool justCheckingForActivity = false)
