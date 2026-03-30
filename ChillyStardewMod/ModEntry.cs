@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using com.lightstreamer.client;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
@@ -7,6 +8,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData.Objects;
+using StardewValley.ItemTypeDefinitions;
 using StardewValley.Objects;
 using Object = System.Object;
 
@@ -65,15 +67,18 @@ namespace ChillyStardewMod
 
         public void OnAssetRequested(object sender, AssetRequestedEventArgs e)
         {
-            if (e.NameWithoutLocale.BaseName == "Data/Objects")
+            if (e.NameWithoutLocale.BaseName == "Data/Furniture")
             {
-                ObjectData trophy_item =
-                    Helper.ModContent.Load <Dictionary<string, ObjectData>>("assets/trophy_item.json").GetValueSafe("Item");
-                trophy_item.Texture = trophyTexturePath;
-                
+                //ObjectData trophy_item =
+                    //Helper.ModContent.Load <Dictionary<string, ObjectData>>("assets/trophy_item.json").GetValueSafe("Item");
+                string trophy_item = Helper.ModContent
+                    .Load<Dictionary<string, string>>("assets/trophy_item.json")
+                    .GetValueSafe("Item");
+                trophy_item = trophy_item.Replace("{{TEXTURE}}", trophyTexturePath.Replace("/", @"\\"));
+
                 e.Edit(asset =>
                 {
-                    asset.AsDictionary<string, ObjectData>().Data.Add("ChillyTestMod_Trophy", trophy_item);
+                    asset.AsDictionary<string, string>().Data["ChillyTestMod_Trophy"] = trophy_item;
                 });
             }
         }

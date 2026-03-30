@@ -1,12 +1,3 @@
 {
-  "Item": {
-    "Name": "ChillyTestMod_Trophy",
-    "Displayname": "Piss Chalice",
-    "Description": "A trophy for seeing the ISS piss value at exactly 50%!",
-    "Type": "Objects",
-    "Category": -101,
-    "Price": 0,
-    "Texture": "Mods/ChillyTestMod/Objects",
-    "SpriteIndex": 0
-  }
+  "Item": "ChillyTestMod_trophy/chair/-1/-1/4/350/-1/Piss Chalice/0/{{TEXTURE}}"
 }
