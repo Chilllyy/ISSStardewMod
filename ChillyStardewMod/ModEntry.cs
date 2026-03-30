@@ -69,8 +69,6 @@ namespace ChillyStardewMod
         {
             if (e.NameWithoutLocale.BaseName == "Data/Furniture")
             {
-                //ObjectData trophy_item =
-                    //Helper.ModContent.Load <Dictionary<string, ObjectData>>("assets/trophy_item.json").GetValueSafe("Item");
                 string trophy_item = Helper.ModContent
                     .Load<Dictionary<string, string>>("assets/trophy_item.json")
                     .GetValueSafe("Item");
