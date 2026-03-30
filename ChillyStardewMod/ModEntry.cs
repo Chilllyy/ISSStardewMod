@@ -8,6 +8,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData.Objects;
 using StardewValley.Objects;
+using Object = System.Object;
 
 namespace ChillyStardewMod
 {
@@ -36,11 +37,11 @@ namespace ChillyStardewMod
             mon = Monitor;
             hel = Helper;
             uniqueID = ModManifest.UniqueID;
-            Helper.ModContent.Load<Texture2D>("assets/ISS.png"); //Load content
-            assetPath = Helper.ModContent.GetInternalAssetName("assets/ISS.png").BaseName;
+            Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "ISS.png")); //Load content
+            assetPath = Helper.ModContent.GetInternalAssetName(Path.Combine("Assets", "ISS.png")).BaseName;
 
-            Helper.ModContent.Load<Texture2D>("assets/Trophy.png");
-            trophyTexturePath = Helper.ModContent.GetInternalAssetName("assets/Trophy.png").BaseName;
+            Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "Trophy.png"));
+            trophyTexturePath = Helper.ModContent.GetInternalAssetName(Path.Combine("assets", "Trophy.png")).BaseName;
             
             lsClient.subscribe(sub);
             
@@ -64,11 +65,12 @@ namespace ChillyStardewMod
 
         public void OnAssetRequested(object sender, AssetRequestedEventArgs e)
         {
-            if (e.NameWithoutLocale.BaseName == "Data/Objects")
+            if (e.NameWithoutLocale.BaseName == "Data/Furniture")
             {
                 ObjectData trophy_item =
                     Helper.ModContent.Load <Dictionary<string, ObjectData>>("assets/trophy_item.json").GetValueSafe("Item");
                 trophy_item.Texture = trophyTexturePath;
+                
                 e.Edit(asset =>
                 {
                     asset.AsDictionary<string, ObjectData>().Data.Add("ChillyTestMod_Trophy", trophy_item);
@@ -104,10 +106,8 @@ namespace ChillyStardewMod
                     case "GiveISSTrophy":
                         long farmerId = e.ReadAs<long>();
                         Farmer farmer = Game1.GetPlayer(farmerId);
-                        Item trophy = ItemRegistry.Create("ChillyTestMod_Trophy");
-                        Item res = farmer.addItemToInventory(trophy);
+                        int slot = giveItem(farmer);
 
-                        int slot = farmer.getIndexOfInventoryItem(trophy);
                         if (slot <= 11)
                         {
                             farmer.CurrentToolIndex = slot;
@@ -115,6 +115,14 @@ namespace ChillyStardewMod
                         break;
                 }
             }
+        }
+
+        public static int giveItem(Farmer who)
+        {
+            Item trophy = ItemRegistry.Create("ChillyTestMod_Trophy");
+            Item res = who.addItemToInventory(trophy);
+            if (res == null) return -1;
+            return who.getIndexOfInventoryItem(trophy);
         }
 
         private void setValue(string command, string[] args)
@@ -231,10 +239,9 @@ namespace ChillyStardewMod
                                         Game1.afterDialogues = __instance.turnOffTV;
                                         return;
                                     }
-
-                                    Item trophy = ItemRegistry.Create("ChillyTestMod_Trophy");
-                                    Item res = who.addItemToInventory(trophy);
-                                    if (res != null)
+                                    
+                                    int slot = giveItem(who);
+                                    if (slot == -1)
                                     {
                                         Game1.afterDialogues = () =>
                                         {
@@ -246,10 +253,9 @@ namespace ChillyStardewMod
                                     }
                                     else
                                     {
-                                        int slotindex = who.getIndexOfInventoryItem(trophy);
-                                        if (slotindex <= 11)
+                                        if (slot <= 11)
                                         {
-                                            who.CurrentToolIndex = slotindex;
+                                            who.CurrentToolIndex = slot;
                                         }
 
                                         Game1.afterDialogues = __instance.turnOffTV;
